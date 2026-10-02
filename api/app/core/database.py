@@ -1,15 +1,17 @@
 import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.pool import StaticPool
 
-# Expects a Neon Postgres URL like postgresql+asyncpg://...
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./fintech_enterprise.db")
-if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
-if DATABASE_URL.startswith("postgresql://"):
-    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+# Use a shared in-memory SQLite database so it works on Vercel without Neon!
+DATABASE_URL = "sqlite+aiosqlite:///file:memdb1?mode=memory&cache=shared&uri=true"
 
-engine = create_async_engine(DATABASE_URL, echo=False)
+engine = create_async_engine(
+    DATABASE_URL, 
+    echo=False, 
+    connect_args={"check_same_thread": False}, 
+    poolclass=StaticPool
+)
 AsyncSessionLocal = sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False
 )
