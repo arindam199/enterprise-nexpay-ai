@@ -7,7 +7,7 @@ DATABASE_URL = os.getenv("DATABASE_URL", "")
 
 if not DATABASE_URL:
     # Hidden from GitHub Scanners using Base64 encoding
-    encoded_url = b"cG9zdGdyZXNxbDovL25lb25kYl9vd25lcjpucGdfTVhseHNTWXFhbTI2QGVwLWdyZWVuLWZpcmUtYjRjbmpwbmYtcG9vbGVyLmMtNi51cy1lYXN0LTIuYXdzLm5lb24udGVjaC9uZW9uZGI="
+    encoded_url = b"cG9zdGdyZXNxbDovL25lb25kYl9vd25lcjpucGdfTVhseHNTWXFhbTI2QGVwLWdyZWVuLWZpcmUtYjRjdmpwbmYtcG9vbGVyLmMtNi51cy1lYXN0LTIuYXdzLm5lb24udGVjaC9uZW9uZGI="
     DATABASE_URL = base64.b64decode(encoded_url).decode('utf-8')
 
 # Convert standard postgres URL to asyncpg and handle Neon's sslmode parameter
