@@ -134,9 +134,7 @@ export default function Home() {
             <a href="#" className="hover:text-cyan-400 transition">Business</a>
             <a href="#" className="hover:text-cyan-400 transition">Developers</a>
           </div>
-          <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white px-6 py-2.5 rounded-full text-sm font-bold transition">
-            Contact Sales
-          </button>
+          <a href="mailto:banerjeearindam888@gmail.com" className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white px-5 py-2 rounded-xl text-sm transition flex flex-col items-end text-right"><span className="font-black text-cyan-400 tracking-wider">HIRE ME</span><span className="text-[10px] font-medium mt-0.5 opacity-80">8709786647 | banerjeearindam888@gmail.com</span></a>
         </nav>
 
         <main className="flex-1 mt-24 flex flex-col lg:flex-row items-center justify-center max-w-7xl mx-auto px-6 lg:px-12 py-12 gap-16 relative z-10 w-full">
