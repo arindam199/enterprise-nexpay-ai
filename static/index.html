@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexPay AI | Fraud Detection Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .gradient-text { background: linear-gradient(90deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; color: transparent; }
+    </style>
+</head>
+<body class="text-gray-800">
+    <nav class="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
+        <div class="text-2xl font-bold gradient-text"><i class="fa-solid fa-shield-halved mr-2"></i>NexPay AI</div>
+        <div class="text-sm font-medium text-gray-500">Intelligent Fraud Prevention</div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-1 space-y-6">
+            <div class="glass-panel rounded-2xl shadow-sm p-6">
+                <h2 class="text-lg font-bold mb-4 text-gray-700 border-b pb-2">Account Overview</h2>
+                <div id="user-info" class="hidden">
+                    <p class="text-sm text-gray-500 mb-1">Welcome back,</p>
+                    <p class="text-xl font-bold text-gray-800" id="display-name">John Doe</p>
+                    <div class="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                        <p class="text-sm text-gray-500">Available Balance</p>
+                        <p class="text-3xl font-extrabold text-blue-600 mt-1" id="display-balance">$0.00</p>
+                    </div>
+                </div>
+                <div id="login-form">
+                    <p class="text-sm text-gray-500 mb-4">Register a demo account to start testing.</p>
+                    <input type="text" id="reg-name" placeholder="Full Name" class="w-full px-4 py-2 mb-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="email" id="reg-email" placeholder="Email Address" class="w-full px-4 py-2 mb-4 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <button onclick="registerUser()" id="reg-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200">Create Account</button>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl shadow-sm p-6 relative">
+                <div id="tx-overlay" class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
+                    <span class="text-sm font-medium text-gray-600">Please create an account first</span>
+                </div>
+                <h2 class="text-lg font-bold mb-4 text-gray-700 border-b pb-2">Send Money</h2>
+                
+                <label class="block text-sm font-medium text-gray-600 mb-1">Amount ($)</label>
+                <input type="number" id="tx-amount" placeholder="e.g. 500" class="w-full px-4 py-2 mb-4 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                
+                <label class="block text-sm font-medium text-gray-600 mb-1">Transaction Type</label>
+                <select id="tx-type" class="w-full px-4 py-2 mb-4 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="transfer">Bank Transfer</option>
+                    <option value="payment">Online Payment</option>
+                    <option value="withdrawal">ATM Withdrawal</option>
+                </select>
+
+                <label class="block text-sm font-medium text-gray-600 mb-1">Location</label>
+                <select id="tx-location" class="w-full px-4 py-2 mb-6 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="local">Local (Domestic)</option>
+                    <option value="international">International</option>
+                </select>
+
+                <button onclick="submitTransaction()" id="tx-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-md flex items-center justify-center">
+                    <i class="fa-solid fa-paper-plane mr-2"></i> Process Transaction
+                </button>
+            </div>
+            
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
+                <p class="font-bold mb-1"><i class="fa-solid fa-lightbulb text-yellow-500 mr-1"></i> Pro Tip for Portfolio:</p>
+                <p>The AI Model is trained on patterns. Try sending a massive amount (e.g., $15,000) internationally via withdrawal to see the AI flag it as Fraud!</p>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-6">
+            <div class="glass-panel rounded-2xl shadow-sm p-6 min-h-[600px]">
+                <div class="flex justify-between items-center mb-6 border-b pb-3">
+                    <h2 class="text-xl font-bold text-gray-800">Transaction History</h2>
+                    <button onclick="fetchTransactions()" class="text-gray-500 hover:text-blue-600 transition"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-sm font-semibold text-gray-500 border-b border-gray-200">
+                                <th class="pb-3 px-2">ID</th>
+                                <th class="pb-3 px-2">Type</th>
+                                <th class="pb-3 px-2">Location</th>
+                                <th class="pb-3 px-2 text-right">Amount</th>
+                                <th class="pb-3 px-2 text-center">AI Security Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tx-table-body" class="text-sm text-gray-700">
+                            <tr><td colspan="5" class="text-center py-8 text-gray-400">No transactions found.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="alert-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 text-center">
+            <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-shield-virus text-3xl text-red-500"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Fraud Alert Blocked!</h3>
+            <p class="text-gray-600 mb-6">Our AI security system has detected abnormal patterns in this transaction. The transfer has been blocked to protect your funds.</p>
+            <button onclick="document.getElementById('alert-modal').classList.replace('flex', 'hidden')" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2 px-4 rounded-lg">Dismiss</button>
+        </div>
+    </div>
+    
+    <div id="toast" class="fixed bottom-5 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg font-medium transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <i class="fa-solid fa-circle-check mr-2"></i> <span id="toast-msg">Success!</span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
