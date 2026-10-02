@@ -1,20 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from app.core.database import get_db
-from app.models.transaction import Transaction
-from app.models.user import User
-from app.api.auth import oauth2_scheme
-from jose import jwt
-from app.core.config import SECRET_KEY, ALGORITHM
 from pydantic import BaseModel
 from typing import List
-from ai.predict import predict_fraud
 import datetime
+from jose import jwt
+
+from app.api.auth import oauth2_scheme
+from app.core.security import SECRET_KEY, ALGORITHM, get_password_hash
+from app.core.database import users_db, transactions_db, tx_id_counter, user_id_counter
 
 router = APIRouter()
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
+async def get_current_user(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email = payload.get("sub")
@@ -23,17 +19,18 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
         
-    result = await db.execute(select(User).where(User.email == email))
-    user = result.scalars().first()
-    
-    # Auto-create if Vercel stateless DB resets but token is valid
-    if user is None:
-        from app.core.security import get_password_hash
-        user = User(name="Demo User", email=email, hashed_password=get_password_hash("demo"))
-        db.add(user)
-        await db.commit()
-        await db.refresh(user)
-        
+    user = users_db.get(email)
+    if not user:
+        global user_id_counter
+        users_db[email] = {
+            "id": user_id_counter,
+            "name": "Demo User",
+            "email": email,
+            "hashed_password": get_password_hash("demo"),
+            "account_balance": 15000.0
+        }
+        user = users_db[email]
+        user_id_counter += 1
     return user
 
 class TransactionCreate(BaseModel):
@@ -51,33 +48,41 @@ class TransactionResponse(BaseModel):
     is_fraud: bool
     timestamp: datetime.datetime
 
-    class Config:
-        from_attributes = True
-
 @router.post("/", response_model=TransactionResponse)
-async def create_transaction(tx: TransactionCreate, current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    is_fraud = await predict_fraud(current_user.id, tx.amount, tx.transaction_type, tx.location, db)
+async def create_transaction(tx: TransactionCreate, current_user: dict = Depends(get_current_user)):
+    global tx_id_counter
     
-    new_tx = Transaction(
-        user_id=current_user.id,
-        receiver_account=tx.receiver_account,
-        amount=tx.amount,
-        transaction_type=tx.transaction_type,
-        location=tx.location,
-        is_fraud=is_fraud
-    )
-    db.add(new_tx)
+    # Lightweight AI Simulation
+    user_velocity = sum(1 for t in transactions_db if t["user_id"] == current_user["id"])
+    risk_score = 0
+    if tx.amount > 5000: risk_score += 0.6
+    elif tx.amount > 1000: risk_score += 0.3
+    if user_velocity >= 3: risk_score += 0.5
+    elif user_velocity >= 2: risk_score += 0.2
+    if tx.location.lower() == 'international': risk_score += 0.4
+    if tx.transaction_type.lower() == 'withdrawal': risk_score += 0.2
+    
+    is_fraud = risk_score >= 0.8
+    
+    new_tx = {
+        "id": tx_id_counter,
+        "user_id": current_user["id"],
+        "receiver_account": tx.receiver_account,
+        "amount": tx.amount,
+        "transaction_type": tx.transaction_type,
+        "location": tx.location,
+        "is_fraud": is_fraud,
+        "timestamp": datetime.datetime.utcnow()
+    }
+    transactions_db.append(new_tx)
+    tx_id_counter += 1
     
     if not is_fraud:
-        current_user.account_balance -= tx.amount
+        users_db[current_user["email"]]["account_balance"] -= tx.amount
         
-    await db.commit()
-    await db.refresh(new_tx)
     return new_tx
 
 @router.get("/", response_model=List[TransactionResponse])
-async def get_my_transactions(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
-    result = await db.execute(
-        select(Transaction).where(Transaction.user_id == current_user.id).order_by(Transaction.timestamp.desc())
-    )
-    return result.scalars().all()
+async def get_my_transactions(current_user: dict = Depends(get_current_user)):
+    user_txs = [t for t in transactions_db if t["user_id"] == current_user["id"]]
+    return sorted(user_txs, key=lambda x: x["timestamp"], reverse=True)

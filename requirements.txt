@@ -1,9 +1,4 @@
 fastapi
-uvicorn
-sqlalchemy
-aiosqlite
 pydantic
-python-jose[cryptography]
-passlib[bcrypt]
 python-multipart
-asyncpg
+pyjwt
