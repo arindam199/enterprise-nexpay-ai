@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import auth, transactions
+from api.app.api import auth, transactions
 
 app = FastAPI(title="Enterprise Fintech AI API")
 
