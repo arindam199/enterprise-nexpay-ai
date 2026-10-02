@@ -25,8 +25,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
         
     result = await db.execute(select(User).where(User.email == email))
     user = result.scalars().first()
+    
+    # Auto-create if Vercel stateless DB resets but token is valid
     if user is None:
-        raise HTTPException(status_code=401, detail="User not found")
+        from app.core.security import get_password_hash
+        user = User(name="Demo User", email=email, hashed_password=get_password_hash("demo"))
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+        
     return user
 
 class TransactionCreate(BaseModel):
