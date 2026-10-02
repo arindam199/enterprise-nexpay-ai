@@ -51,7 +51,7 @@ class TransactionResponse(BaseModel):
     class Config:
         from_attributes = True
 
-@router.post("/", response_model=TransactionResponse)
+@router.post("", response_model=TransactionResponse)
 def create_transaction(tx: TransactionCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     # Lightweight AI Simulation
     user_velocity = db.query(Transaction).filter(Transaction.user_id == current_user.id).count()
@@ -81,7 +81,7 @@ def create_transaction(tx: TransactionCreate, current_user: User = Depends(get_c
     db.refresh(new_tx)
     return new_tx
 
-@router.get("/", response_model=List[TransactionResponse])
+@router.get("", response_model=List[TransactionResponse])
 def get_my_transactions(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     try:
         return db.query(Transaction).filter(Transaction.user_id == current_user.id).order_by(Transaction.timestamp.desc()).all()

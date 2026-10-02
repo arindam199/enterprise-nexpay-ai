@@ -60,7 +60,7 @@ export default function Home() {
 
   const fetchTransactions = async (authToken: string) => {
     try {
-      const res = await axios.get(`${API_URL}/transactions/`, {
+      const res = await axios.get(`${API_URL}/transactions`, {
         headers: { Authorization: `Bearer ${authToken}` }
       });
       setTransactions(res.data);
@@ -74,7 +74,7 @@ export default function Home() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post(`${API_URL}/transactions/`, 
+      const res = await axios.post(`${API_URL}/transactions`, 
         { 
           receiver_account: txReceiver,
           amount: parseFloat(txAmount), 
