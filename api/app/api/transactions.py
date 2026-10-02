@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List
 import datetime
-from jose import jwt
+import jwt
 
 from api.app.api.auth import oauth2_scheme
 from api.app.core.security import SECRET_KEY, ALGORITHM, get_password_hash
