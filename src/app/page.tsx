@@ -296,9 +296,7 @@ export default function Home() {
             <div className="relative z-10 text-center">
               <h3 className="text-2xl font-black text-white mb-2">Upgrade to PRO</h3>
               <p className="text-purple-200 text-sm mb-4">Get 0% international transfer fees.</p>
-              <button className="bg-white text-purple-900 font-bold py-2 px-6 rounded-full shadow-lg hover:scale-105 transition-transform">
-                Explore Perks
-              </button>
+              <button onClick={() => window.location.href = '/pro'} className="bg-white text-purple-900 font-bold py-2 px-6 rounded-full shadow-lg hover:scale-105 transition-transform">Explore Perks</button>
             </div>
           </div>
         </div>
