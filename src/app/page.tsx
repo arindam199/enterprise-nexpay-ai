@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import InternshipCertificate from "./components/InternshipCertificate";
 
 const API_URL = "/api/v1";
 
@@ -11,6 +12,7 @@ export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [isLogin, setIsLogin] = useState(true);
+  const [showCertModal, setShowCertModal] = useState(false);
 
   // Form states
   const [email, setEmail] = useState("");
@@ -114,7 +116,7 @@ export default function Home() {
   if (!token) {
     return (
       <div 
-        className="min-h-screen flex flex-col font-sans relative overflow-hidden"
+        className="min-h-screen flex flex-col font-sans relative overflow-x-hidden"
         style={{
           backgroundImage: "url('https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&w=2000&q=80')",
           backgroundSize: "cover",
@@ -122,38 +124,47 @@ export default function Home() {
           backgroundAttachment: "fixed"
         }}
       >
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
+        <div className="absolute inset-0 bg-black/65 backdrop-blur-[2px]"></div>
 
-        <nav className="flex justify-between items-center px-10 py-6 fixed w-full z-20 top-0">
+        <nav className="flex justify-between items-center px-6 sm:px-10 py-5 fixed w-full z-30 top-0 bg-slate-950/70 backdrop-blur-md border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-cyan-500/30">N</div>
             <span className="text-2xl font-bold text-white tracking-tight">NexPay <span className="text-cyan-400">AI</span></span>
           </div>
-          <div className="hidden md:flex gap-10 text-sm font-bold text-gray-200">
-            <a href="#" className="hover:text-cyan-400 transition">Personal</a>
-            <a href="#" className="hover:text-cyan-400 transition">Business</a>
-            <a href="#" className="hover:text-cyan-400 transition">Developers</a>
+          <div className="hidden lg:flex gap-6 items-center text-sm font-bold text-gray-200">
+            <a href="#certificate" className="text-amber-400 hover:text-amber-300 transition flex items-center gap-1.5 bg-amber-400/10 border border-amber-400/20 px-3.5 py-1.5 rounded-full text-xs shadow-[0_0_10px_rgba(251,191,36,0.2)]">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+              Internship Certificate
+            </a>
+            <a href="/certificate" className="hover:text-cyan-400 transition text-xs">Credential Portal</a>
+            <a href="#" className="hover:text-cyan-400 transition text-xs">Personal</a>
+            <a href="#" className="hover:text-cyan-400 transition text-xs">Business</a>
+            <a href="#" className="hover:text-cyan-400 transition text-xs">Developers</a>
           </div>
-          <a href="mailto:banerjeearindam888@gmail.com" className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white px-5 py-2 rounded-xl text-sm transition flex flex-col items-end text-right"><span className="font-black text-cyan-400 tracking-wider">CONTACT ME</span><span className="text-[10px] font-medium mt-0.5 opacity-80">8709786647 | banerjeearindam888@gmail.com</span></a>
+          <a href="mailto:banerjeearindam888@gmail.com" className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white px-5 py-2 rounded-xl text-sm transition flex flex-col items-end text-right">
+            <span className="font-black text-cyan-400 tracking-wider">CONTACT ME</span>
+            <span className="text-[10px] font-medium mt-0.5 opacity-80">8709786647 | banerjeearindam888@gmail.com</span>
+          </a>
         </nav>
 
+        {/* Hero Section */}
         <main className="flex-1 mt-24 flex flex-col lg:flex-row items-center justify-center max-w-7xl mx-auto px-6 lg:px-12 py-12 gap-16 relative z-10 w-full">
           
-          <div className="flex-1 space-y-8 text-center lg:text-left">
+          <div className="flex-1 space-y-6 text-center lg:text-left">
             <div className="inline-block px-5 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-bold text-sm backdrop-blur-md uppercase tracking-widest shadow-[0_0_15px_rgba(34,211,238,0.2)]">
               Next-Gen Financial Security
             </div>
-            <h1 className="text-6xl lg:text-7xl font-black text-white leading-[1.1] tracking-tight drop-shadow-2xl">
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-[1.1] tracking-tight drop-shadow-2xl">
               Send Money. <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500">
                 AI Will Protect It.
               </span>
             </h1>
-            <p className="text-xl text-gray-300 max-w-xl leading-relaxed mx-auto lg:mx-0 font-medium">
+            <p className="text-lg sm:text-xl text-gray-300 max-w-xl leading-relaxed mx-auto lg:mx-0 font-medium">
               Experience the world's first payments platform secured by real-time XGBoost AI models. We analyze 50+ data points instantly to block fraud before it happens.
             </p>
             
-            <div className="flex items-center justify-center lg:justify-start gap-4 pt-4">
+            <div className="flex items-center justify-center lg:justify-start gap-4 pt-2">
               <div className="flex -space-x-4">
                 <img className="w-12 h-12 rounded-full border-2 border-slate-900" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="User" />
                 <img className="w-12 h-12 rounded-full border-2 border-slate-900" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&q=80" alt="User" />
@@ -163,10 +174,30 @@ export default function Home() {
                 Trusted by <span className="text-white font-bold">2M+</span> users
               </p>
             </div>
+
+            {/* Industrial Internship Certificate Callout Badge */}
+            <div className="mt-6 p-4 rounded-2xl bg-amber-950/40 border border-amber-500/30 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3 text-left shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl font-bold">
+                  🎓
+                </div>
+                <div>
+                  <p className="text-[11px] uppercase font-bold text-amber-400 tracking-wider">Industrial Internship Capstone</p>
+                  <p className="text-xs font-semibold text-white">Full-Stack AI & FinTech Security • Grade A+ Verified</p>
+                </div>
+              </div>
+              <a 
+                href="#certificate" 
+                className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition shadow whitespace-nowrap"
+              >
+                View Certificate &darr;
+              </a>
+            </div>
+
           </div>
           
           <div className="flex-1 w-full max-w-md">
-            <div className="bg-white/10 backdrop-blur-xl p-10 rounded-[2.5rem] shadow-2xl border border-white/20 relative overflow-hidden">
+            <div className="bg-white/10 backdrop-blur-xl p-8 sm:p-10 rounded-[2.5rem] shadow-2xl border border-white/20 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
               
@@ -201,6 +232,24 @@ export default function Home() {
             </div>
           </div>
         </main>
+
+        {/* Industrial Internship Certificate Showcase Section */}
+        <section id="certificate" className="w-full relative z-10 py-16 px-6 max-w-6xl mx-auto border-t border-white/10 mt-12">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold text-xs uppercase tracking-widest mb-4">
+              <span>🏆 Verified Industrial Credential</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
+              Industrial Internship Certification
+            </h2>
+            <p className="text-slate-400 max-w-2xl mx-auto mt-3 text-sm sm:text-base">
+              Awarded to <strong className="text-white">Arindam Banerjee</strong> for exemplary performance in architecting, engineering, and deploying production-level AI FinTech systems.
+            </p>
+          </div>
+
+          <InternshipCertificate />
+        </section>
+
       </div>
     );
   }
@@ -210,12 +259,19 @@ export default function Home() {
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600/20 rounded-full blur-[100px] pointer-events-none"></div>
 
-      <nav className="bg-[#1e293b]/80 backdrop-blur-md px-8 py-4 flex justify-between items-center border-b border-gray-800 sticky top-0 z-20 shadow-2xl">
+      <nav className="bg-[#1e293b]/80 backdrop-blur-md px-6 sm:px-8 py-4 flex justify-between items-center border-b border-gray-800 sticky top-0 z-20 shadow-2xl">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-white font-black text-2xl shadow-[0_0_15px_rgba(34,211,238,0.4)]">N</div>
           <span className="text-2xl font-bold text-white tracking-tight">NexPay</span>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowCertModal(true)}
+            className="hidden sm:flex items-center gap-2 text-xs font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3.5 py-2 rounded-full shadow-[0_0_10px_rgba(251,191,36,0.15)] hover:bg-amber-400/20 transition"
+          >
+            <span>📜</span>
+            Internship Certificate
+          </button>
           <div className="hidden sm:flex items-center gap-2 text-sm font-bold text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 px-4 py-2 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.1)]">
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
             AI Engine Active
@@ -223,6 +279,15 @@ export default function Home() {
           <button onClick={logout} className="text-gray-400 hover:text-white font-bold transition px-4 py-2 rounded-lg hover:bg-white/10">Logout</button>
         </div>
       </nav>
+
+      {/* Certificate Modal */}
+      {showCertModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 overflow-y-auto">
+          <div className="max-w-5xl w-full my-auto">
+            <InternshipCertificate isModal={true} onClose={() => setShowCertModal(false)} />
+          </div>
+        </div>
+      )}
 
       {alert && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
@@ -259,8 +324,40 @@ export default function Home() {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 py-10 space-y-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6 relative z-10">
         
+        {/* Industrial Internship Certificate Banner */}
+        <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-cyan-950/40 border border-amber-500/30 rounded-3xl p-6 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="flex items-center gap-4 relative z-10">
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-3xl shadow-lg">
+              🎖️
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black uppercase tracking-widest text-amber-400">Industrial Internship Credential</span>
+                <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-500/30">VERIFIED A+</span>
+              </div>
+              <h3 className="text-xl font-bold text-white mt-0.5">Full-Stack AI & FinTech Security Engineering</h3>
+              <p className="text-xs text-slate-400 mt-1">Candidate: Arindam Banerjee • Credential ID: NEX-INT-2026-IND-8709</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 relative z-10">
+            <button
+              onClick={() => setShowCertModal(true)}
+              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-5 py-3 rounded-2xl text-xs transition shadow-lg shadow-amber-500/20 flex items-center gap-2 whitespace-nowrap"
+            >
+              <span>📜 View Certificate</span>
+            </button>
+            <a
+              href="/certificate"
+              className="bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 font-bold px-4 py-3 rounded-2xl text-xs transition whitespace-nowrap"
+            >
+              Portal View &rarr;
+            </a>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="col-span-1 md:col-span-1 bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl shadow-2xl p-6 border border-gray-700 relative overflow-hidden group hover:scale-[1.02] transition-transform">
             <div className="absolute top-[-50px] right-[-50px] w-40 h-40 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
